@@ -152,9 +152,18 @@ function getItemInfo(wb){
   })
   
   let rowNum = 12;
+  let seqNoNumber = 0;
   let currentUsage = "";
-  while(rowNum <= 27){
+  let maxSeqNoNumber = 5
+  while(seqNoNumber <= maxSeqNoNumber){
     let item = getCellValue(wb,0,'A'+rowNum);
+    
+    if(typeof item !== "number"){
+      seqNoNumber += 1
+      continue
+    }else{
+      seqNoNumber = 0
+    }
     
     let level = getCellValue(wb,0,'B'+rowNum);
     
