@@ -157,9 +157,10 @@ function getItemInfo(wb){
   let maxSeqNoNumber = 5
   while(seqNoNumber <= maxSeqNoNumber){
     let item = getCellValue(wb,0,'A'+rowNum);
-    
+    // console.log(item)
     if(typeof item !== "number"){
       seqNoNumber += 1
+      rowNum += 1;
       continue
     }else{
       seqNoNumber = 0
@@ -411,6 +412,9 @@ server.on('request',function(req,res){
         
         res.end(JSON.stringify({error: null}));
       }
+      
+      //request info from part numbers
+      
       
       // I dont know what this post req is
       else{

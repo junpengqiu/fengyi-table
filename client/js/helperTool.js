@@ -121,3 +121,9 @@ function switchToUploadBom(event){
     upBom.style.display = "block"
     console.log("ff")
 }
+
+function onSelect(event) {
+    event.preventDefault()
+    console.log(document.getElementById("myselect").value)
+    
+}
