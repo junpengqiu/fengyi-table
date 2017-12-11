@@ -6,17 +6,47 @@ const server = http.createServer();
 const Jimp = require("jimp")
 const mongoose = require("mongoose");
 const md5 = require("md5");
+const XLSX = require('xlsx');
+
+
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost/h_starter_data", {useMongoClient: true})
+mongoose.connect("mongodb://localhost/fortunebom", {useMongoClient: true})
 //database config
-var userBaseSchema = new mongoose.Schema({
-  email: String,
-  password: String,
-  emailVerified: Boolean,
-  nickName: String,
-  createdDate: Number
+var productItemSchema = new mongoose.Schema({
+  "Product Item Id" : String,
+  "Product Name": String,
+  "Prepare by": String,
+  "Date": Number,
+  "Rev": String,
+  "Customer": String,
+  "Verify by": String,
+  "Page": String,
+  "Part Number Set": Object
 });
-var UserBase = mongoose.model("UserBase", userBaseSchema);
+var ProductItem = mongoose.model("ProductItem", productItemSchema);
+
+var productPartSchema = new mongoose.Schema({
+  "Product Number": String,
+  "Product Name": String,
+  "Prepare by": String,
+  "Date": String,
+  "Rev": String,
+  "Customer": String,
+  "Verify by": String,
+  "Page": String,
+  
+  "Part Number": String,
+  "Item": Number,
+  "Level": String,
+  "Usage": String,
+  "Part Name": String,
+  "Mtl Specification": String,
+  "Unit": String,
+  "Q\'ty\/Set": String,
+  "Vendor": String,
+  "Remark": String
+});
+var ProductPart = mongoose.model("ProductPart", productPartSchema);
 
 var sessionSet = {} // sid: [_id,ip]
 function updateIdToSession(id,ip){
@@ -69,6 +99,111 @@ sessionSet["00000"] = {
   id: "gogogo",
   ip: jpIp,
   time 
+}
+
+//helper functions
+function getCellValue(wb,sheetIdx,cellAddr){
+  var ws = wb.Sheets[wb.SheetNames[sheetIdx]];
+  var desired_cell = ws[cellAddr];
+  return desired_cell?desired_cell.v:undefined;
+}
+
+function getItemInfo(wb){
+  
+  let productNum = getCellValue(wb,0,'A7')
+  productNum = productNum.split("：#")
+  productNum = productNum[1]
+  
+  let preparer = getCellValue(wb,0,'E7')
+  preparer = preparer.split(":")
+  preparer = preparer[1]
+  
+  let dt = getCellValue(wb,0,'H7');
+  dt = (dt-1) * 8.64e7 -2208960000000
+  
+  let productName = getCellValue(wb,0,'A8')
+  productName = productName.split("：")
+  productName = productName[1]
+  
+  let rev = getCellValue(wb,0,'H8')
+  
+  let customer = getCellValue(wb,0,'A9')
+  customer = customer.split("：")
+  customer = customer[1]
+  
+  let verifier = getCellValue(wb,0,'E9')
+  verifier = verifier.split("：")
+  verifier = verifier[1]
+  
+  let pageNum = getCellValue(wb,0,'H9')
+  let currentItem = new ProductItem({
+    "Product Item Id" : productNum,
+    "Product Name": productName,
+    "Prepare by": preparer,
+    "Date": dt,
+    "Rev": rev,
+    "Customer": customer,
+    "Verify by": verifier,
+    "Page": pageNum,
+    "Part Number Set": {}
+  })
+  currentItem.save(function(error,data){
+    if(error)console.log('when saveing currentItem, meet error: ',error)
+  })
+  
+  let rowNum = 12;
+  let currentUsage = "";
+  while(rowNum <= 27){
+    let item = getCellValue(wb,0,'A'+rowNum);
+    
+    let level = getCellValue(wb,0,'B'+rowNum);
+    
+    let usage = getCellValue(wb,0,'C'+rowNum);
+    if(usage) currentUsage = usage;
+    
+    let partName = getCellValue(wb,0,'D'+rowNum);
+    
+    let partNum = "000" + (rowNum - 12).toString()
+    partNum = productNum + '-' + partNum.slice(-3)
+    
+    let mtlSpec = getCellValue(wb,0,'E' + rowNum);
+    
+    let unit = getCellValue(wb,0,'F' + rowNum);
+    
+    let qty = getCellValue(wb,0,'G' + rowNum)
+    
+    let vendor = getCellValue(wb,0,'H' + rowNum)
+    
+    let remark = getCellValue(wb,0,'I' + rowNum)
+    
+    let currentPart = new ProductPart({
+      "Product Item Id" : productNum,
+      "Product Name": productName,
+      "Prepare by": preparer,
+      "Date": dt,
+      "Rev": rev,
+      "Customer": customer,
+      "Verify by": verifier,
+      "Page": pageNum,
+      
+      "Part Number": partNum,
+      "Item": item,
+      "Level": level,
+      "Usage": currentUsage,
+      "Part Name": partName,
+      "Mtl Specification": mtlSpec,
+      "Unit": unit,
+      "Q\'ty\/Set": qty,
+      "Vendor": vendor,
+      "Remark": remark
+    })
+    
+    currentPart.save(function(error,data){
+      if(error) console.log('when saving current part, meet error: ', error)
+    })
+    
+    rowNum += 1;
+  }
 }
 
 
@@ -176,7 +311,7 @@ server.on('request',function(req,res){
     });
     req.on('end', function(){
       var bodyStr = Buffer.concat(req.body).toString();
-      var bodyJson = "";
+      var bodyJson = {};
       try{
         bodyJson  = JSON.parse(bodyStr);
       }catch(e){
@@ -184,7 +319,7 @@ server.on('request',function(req,res){
         res.end(JSON.stringify({error:"cannot parse the request"}))
       }
       
-      console.log(`got req with action of ${bodyJson.action}`)
+      console.log(`got req with action of ${bodyJson["action"]}`)
       //for dev Test
       if(bodyJson.action === "imgtest"){
           var toBuf = bodyJson.actualData.replace(/^data:image\/\w+;base64,/, "")
@@ -256,6 +391,16 @@ server.on('request',function(req,res){
             res.end(JSON.stringify({error: null, ifLoggedIn: true})); return;
           }
         }
+      }
+      
+      //post excel
+      else if(bodyJson.action === "postExcel"){
+        // console.log(bodyJson.actualData)
+        var workbook = XLSX.read(bodyJson.actualData, { type: 'binary' });
+        // console.log(getCellValue(workbook,0,'C12'))
+        getItemInfo(workbook)
+        
+        res.end(JSON.stringify({error: null}));
       }
       
       // I dont know what this post req is

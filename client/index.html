@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Log in </title>
+  <title> Fortune Table Maker </title>
   <link rel="stylesheet" type="text/css" href="/css/main.css">
   <style>
   </style>
@@ -20,21 +20,25 @@
 			</li>
         
       <li class="navBulletPoint">
-      	<a href="#">
+      	<a onclick="switchToTableMaker(event)">
         	Table Maker
         </a>
        </li>
         
 			<li class="navBulletPoint">
-				<a href="#">
+				<a onclick="switchToUploadBom(event)">
 					Upload BOM
 				</a>
 			</li>
 		</ul>
 	</div>
 	
-	<div class="tableMaker">Here goes the table make</div>
-	<div class="uploadBom">Upload BOM</div>
+	<div class="tableMaker" id="tableMaker">
+		Here goes the table make
+	</div>
+	<div class="uploadBom" id="uploadBom" style="display:none">
+		<input type="file" onchange="onChoseFile(event)">
+	</div>
 	
 	
 	<script src="/js/helperTool.js"></script>

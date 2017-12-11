@@ -62,17 +62,12 @@ function renderJoinBorder(){
 function myAjax(toSend,cb){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = cb;
-    xhttp.open("POST", "https://h-starter-dawahent.c9users.io/");
+    xhttp.open("POST", "https://fortune-table-dawahent.c9users.io/");
     xhttp.send(JSON.stringify(toSend));
 }
 
-function hey(argument) {
-    let temp = document.getElementById("usrSectionTest")
-    if(temp.style.height === "0px" || temp.style.height === ""){
-        temp.style.height = "250px"
-    }else{
-        temp.style.height = "0"
-    }
+function say(toSay){
+    console.log(toSay)
 }
 
 function getExpires(){
@@ -85,4 +80,44 @@ function checkValidRegInput(usrName,psw,pswRe,nickName){
     if(psw !== pswRe)
         return "Password not confirm"
     return ''
+}
+
+function onChoseFile(event){
+    event.preventDefault();
+    
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    		
+    reader.onloadend = () => {
+        var jsToPass = {}
+        jsToPass["action"] = "postExcel";
+        jsToPass.actualData = reader.result;
+        console.log(jsToPass.actualData)
+        myAjax(jsToPass,function(){
+            if (this.readyState == 4 && this.status == 200){
+                console.log(JSON.parse(this.response))
+            }
+        })
+    }
+    		
+    reader.readAsBinaryString(file)
+}
+
+function switchToTableMaker(event){
+    event.preventDefault();
+    
+    let tbmk = document.getElementById("tableMaker")
+    let upBom = document.getElementById("uploadBom")
+    tbmk.style.display = "block";
+    upBom.style.display = "none"
+}
+
+function switchToUploadBom(event){
+    event.preventDefault();
+    
+    let tbmk = document.getElementById("tableMaker")
+    let upBom = document.getElementById("uploadBom")
+    tbmk.style.display = "none";
+    upBom.style.display = "block"
+    console.log("ff")
 }
