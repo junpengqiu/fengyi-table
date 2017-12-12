@@ -26,7 +26,7 @@ var productItemSchema = new mongoose.Schema({
 var ProductItem = mongoose.model("ProductItem", productItemSchema);
 
 var productPartSchema = new mongoose.Schema({
-  "Product Number": String,
+  "Product Item Id": String,
   "Product Name": String,
   "Prepare by": String,
   "Date": String,
@@ -173,7 +173,7 @@ function getItemInfo(wb){
     
     let partName = getCellValue(wb,0,'D'+rowNum);
     
-    let partNum = "000" + (rowNum - 12).toString()
+    let partNum = "000" + item.toString()
     partNum = productNum + '-' + partNum.slice(-3)
     
     let mtlSpec = getCellValue(wb,0,'E' + rowNum);
@@ -414,7 +414,19 @@ server.on('request',function(req,res){
       }
       
       //request info from part numbers
-      
+      else if(bodyJson.action === "reqPartInfo"){
+        console.log(bodyJson.actualData)
+        ProductPart.find({"Part Number": {$in: bodyJson.actualData}},function(error,data){
+          // console.log(data)
+          let toRes = {};
+          for(let i = 0; i < data.length; i++){
+            toRes[data[i]["Part Number"]] = data[i];
+          }
+          console.log(toRes)
+          res.end(JSON.stringify({error:null, actualData: toRes}))
+        })
+        
+      }
       
       // I dont know what this post req is
       else{

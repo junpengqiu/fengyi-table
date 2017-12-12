@@ -36,7 +36,7 @@ function regUsr(event) {
         if (this.readyState == 4 && this.status == 200) {
             var res = JSON.parse(this.responseText);
             if(res.error !== null){
-                console.log(res)
+                // console.log(res)
                 return;
             }else{
                 document.cookie = `sid=${res.sid}; expires=${getExpires()}`;
@@ -92,10 +92,11 @@ function onChoseFile(event){
         var jsToPass = {}
         jsToPass["action"] = "postExcel";
         jsToPass.actualData = reader.result;
-        console.log(jsToPass.actualData)
+        // console.log(jsToPass.actualData)
         myAjax(jsToPass,function(){
             if (this.readyState == 4 && this.status == 200){
-                console.log(JSON.parse(this.response))
+                // console.log(JSON.parse(this.response))
+                console.log("shangchuanwangbi")
             }
         })
     }
@@ -124,6 +125,70 @@ function switchToUploadBom(event){
 
 function onSelect(event) {
     event.preventDefault()
-    console.log(document.getElementById("myselect").value)
+    // console.log(document.getElementById("myselect").value)
     
+}
+
+function makeTable(dt){
+    //clear the made table
+    let tableArea = document.getElementById("tableWrapper");
+    while(tableArea.hasChildNodes()){
+        tableArea.removeChild(tableArea.lastChild);
+    }
+    
+    //make header
+    // let headerRow = document.createElement("tr")
+    // for(let i = 0; i < selectorValueSet.length; i++){
+    //     let temp = document.createElement("th");
+    //     temp.appendChild(document.createTextNode(selectorValueSet[i]))
+    //     headerRow.appendChild(temp);
+    // }
+    // tableArea.appendChild(headerRow)
+    
+    //append data
+    // console.log(lastReqPartNumbers)
+    
+    for(let i = 0; i < lastReqPartNumbers.length; i++){
+        let dataRow = document.createElement("tr");
+        for(let j = 0; j < selectorValueSet.length; j++){
+            let temp = document.createElement("td");
+            if(dt[lastReqPartNumbers[i]] && dt[lastReqPartNumbers[i]][selectorValueSet[j]]){
+                temp.appendChild(document.createTextNode(dt[lastReqPartNumbers[i]][selectorValueSet[j]]))
+            }else{
+                temp.appendChild(document.createTextNode(" "))
+            }
+            dataRow.appendChild(temp)
+        }
+        tableArea.appendChild(dataRow)
+    }
+}
+
+function onRequest(event){
+    event.preventDefault()
+    
+    let toReq = document.getElementById("requestPartNumbers").value
+    
+    if(toReq === "") return;
+    
+    let temp = toReq.split(/(\r\n|\n|\r)/gm)
+    
+    let partNumbers = []
+    for(let i = 0; i < temp.length; i++){
+        if(temp[i] === "" || temp[i] === temp[1]) continue
+        partNumbers.push(temp[i])
+    }
+    
+    lastReqPartNumbers = partNumbers
+
+    let req = {}
+    req.action = "reqPartInfo";
+    req.actualData = partNumbers;
+    
+    myAjax(req,function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var res = JSON.parse(this.responseText);
+            console.log(res.actualData)
+            makeTable(res.actualData);
+        }
+    })
 }

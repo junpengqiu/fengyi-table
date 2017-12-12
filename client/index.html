@@ -33,20 +33,36 @@
 		</ul>
 	</div>
 	
-	<div class="tableMaker" id="tableMaker">
-		<textarea rows="4" cols="50" id="hey" placeholder="fill the part numbers line by line"></textarea>
-		<div>
-			<button onclick="say('yo')">Make the Table</button>
+	<div style="margin-top: 20px" id="tableMaker">
+		<div style="text-align: center">
+			<textarea rows="4" cols="50" id="requestPartNumbers" placeholder="fill the part numbers line by line"></textarea>
 		</div>
-		<div>
-			<select onchange="onSelect(event)" id="myselect">
-				<option value="volvo">Volvo</option>
-  			<option value="saab">Saab</option>
-			  <option value="mercedes">Mercedes</option>
-			  <option value="audi">Audi</option>
-			</select>
+		
+		<div style="max-width: 1200px; margin: auto">
+			<div style="margin-left:25px" id="selectorGroup">
+					<!-- the added column names go here-->
+			</div>
+			
+			<div style="margin: 5px 5px 5px 5px; display: none;" id="rmButton">
+				<button onclick="removeLastSelector()">-</button>
+			</div>
+			
+			<div style="margin: 5px 5px 5px 5px; display: inline-block">
+				<button onclick="createSelector()">+</button>
+			</div>
+			
 		</div>
+		
+		<div style="margin-top:20px; text-align: center">
+			<button onclick="onRequest(event)">Make the Table</button>
+		</div>
+		
+		<table style="widht: 100%; margin-left: 30px" id="tableWrapper">
+			
+		</table>
 	</div>
+	
+	
 	
 	
 	<div class="uploadBom" id="uploadBom" style="display:none">
@@ -55,7 +71,7 @@
 	
 	
 	<script src="/js/helperTool.js"></script>
-	<script src="/js/loginPage.js"></script>
+	<script src="/js/main.js"></script>
 	
 </Body>
 
