@@ -82,6 +82,21 @@ function checkValidRegInput(usrName,psw,pswRe,nickName){
     return ''
 }
 
+var toTest;
+function logFile(event) {
+    // body...
+    event.preventDefault();
+    
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    
+    reader.onloadend = () => {
+        toTest = reader.result;
+    }
+    
+    reader.readAsDataURL(file)
+}
+
 function onChoseFile(event){
     event.preventDefault();
     
@@ -137,13 +152,13 @@ function makeTable(dt){
     }
     
     //make header
-    // let headerRow = document.createElement("tr")
-    // for(let i = 0; i < selectorValueSet.length; i++){
-    //     let temp = document.createElement("th");
-    //     temp.appendChild(document.createTextNode(selectorValueSet[i]))
-    //     headerRow.appendChild(temp);
-    // }
-    // tableArea.appendChild(headerRow)
+    let headerRow = document.createElement("tr")
+    for(let i = 0; i < selectorValueSet.length; i++){
+        let temp = document.createElement("th");
+        temp.appendChild(document.createTextNode(selectorValueSet[i]))
+        headerRow.appendChild(temp);
+    }
+    tableArea.appendChild(headerRow)
     
     //append data
     // console.log(lastReqPartNumbers)
@@ -161,6 +176,11 @@ function makeTable(dt){
         }
         tableArea.appendChild(dataRow)
     }
+    
+    let wb = XLSX.utils.table_to_book(document.getElementById("tableWrapper"), {sheet:"Sheet JS"});
+    let wbout = XLSX.write(wb, {bookType:"xlsx", bookSST:true, type: 'binary'});
+    let fname = 'result.xlsx'
+    saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), fname);
 }
 
 function onRequest(event){
@@ -191,4 +211,17 @@ function onRequest(event){
             makeTable(res.actualData);
         }
     })
+}
+
+function s2ab(s) {
+	if(typeof ArrayBuffer !== 'undefined') {
+		var buf = new ArrayBuffer(s.length);
+		var view = new Uint8Array(buf);
+		for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+		return buf;
+	} else {
+		var buf = new Array(s.length);
+		for (var i=0; i!=s.length; ++i) buf[i] = s.charCodeAt(i) & 0xFF;
+		return buf;
+	}
 }

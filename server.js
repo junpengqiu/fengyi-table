@@ -422,7 +422,7 @@ server.on('request',function(req,res){
           for(let i = 0; i < data.length; i++){
             toRes[data[i]["Part Number"]] = data[i];
           }
-          console.log(toRes)
+          // console.log(toRes)
           res.end(JSON.stringify({error:null, actualData: toRes}))
         })
         
