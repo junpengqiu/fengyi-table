@@ -162,7 +162,6 @@ function makeTable(dt){
     
     //append data
     // console.log(lastReqPartNumbers)
-    
     for(let i = 0; i < lastReqPartNumbers.length; i++){
         let dataRow = document.createElement("tr");
         for(let j = 0; j < selectorValueSet.length; j++){
@@ -170,7 +169,12 @@ function makeTable(dt){
             if(dt[lastReqPartNumbers[i]] && dt[lastReqPartNumbers[i]][selectorValueSet[j]]){
                 temp.appendChild(document.createTextNode(dt[lastReqPartNumbers[i]][selectorValueSet[j]]))
             }else{
-                temp.appendChild(document.createTextNode(" "))
+                if(selectorValueSet[j] === "Part Number"){
+                    temp.appendChild(document.createTextNode(lastReqPartNumbers[i]))
+                }else{
+                    temp.appendChild(document.createTextNode(" "))
+                }
+                
             }
             dataRow.appendChild(temp)
         }
@@ -188,7 +192,7 @@ function onRequest(event){
     
     let toReq = document.getElementById("requestPartNumbers").value
     
-    if(toReq === "") return;
+    if(toReq === "" || selectorValueSet.length == 0) return;
     
     let temp = toReq.split(/(\r\n|\n|\r)/gm)
     

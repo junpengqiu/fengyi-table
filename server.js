@@ -136,25 +136,16 @@ function getItemInfo(wb){
   verifier = verifier[1]
   
   let pageNum = getCellValue(wb,0,'H9')
-  let currentItem = new ProductItem({
-    "Product Item Id" : productNum,
-    "Product Name": productName,
-    "Prepare by": preparer,
-    "Date": dt,
-    "Rev": rev,
-    "Customer": customer,
-    "Verify by": verifier,
-    "Page": pageNum,
-    "Part Number Set": {}
-  })
-  currentItem.save(function(error,data){
-    if(error)console.log('when saveing currentItem, meet error: ',error)
-  })
+  
+  
+  //part info saver
   
   let rowNum = 12;
   let seqNoNumber = 0;
   let currentUsage = "";
-  let maxSeqNoNumber = 5
+  let maxSeqNoNumber = 5;
+  
+  let partNumSet = new Set();
   while(seqNoNumber <= maxSeqNoNumber){
     let item = getCellValue(wb,0,'A'+rowNum);
     // console.log(item)
@@ -175,6 +166,7 @@ function getItemInfo(wb){
     
     let partNum = "000" + item.toString()
     partNum = productNum + '-' + partNum.slice(-3)
+    partNumSet.add(partNum);
     
     let mtlSpec = getCellValue(wb,0,'E' + rowNum);
     
@@ -214,6 +206,21 @@ function getItemInfo(wb){
     
     rowNum += 1;
   }
+  
+  let currentItem = new ProductItem({
+    "Product Item Id" : productNum,
+    "Product Name": productName,
+    "Prepare by": preparer,
+    "Date": dt,
+    "Rev": rev,
+    "Customer": customer,
+    "Verify by": verifier,
+    "Page": pageNum,
+    "Part Number Set": partNumSet
+  })
+  currentItem.save(function(error,data){
+    if(error)console.log('when saveing currentItem, meet error: ',error)
+  })
 }
 
 
