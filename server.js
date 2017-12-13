@@ -1,3 +1,4 @@
+// "use strict";
 const http = require('http');
 const fs = require('fs'); // for static files
 const path = require('path'); // for static files

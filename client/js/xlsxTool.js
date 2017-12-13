@@ -8,9 +8,9 @@ function getItemInfo(wb){
   
   let productNum = getCellValue(wb,0,'A7')
 //   console.log(productNum[16])
-//   let tempSplit = productNum[16];
+  let tempSplit = productNum[16];
 
-  let tempSplit = "："
+//   let tempSplit = "："
   productNum = productNum.split(tempSplit)
   console.log(productNum)
   productNum = productNum[1]
