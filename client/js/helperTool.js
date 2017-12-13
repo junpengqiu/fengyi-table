@@ -192,6 +192,7 @@ function onRequest(event){
     
     let toReq = document.getElementById("requestPartNumbers").value
     
+    
     if(toReq === "" || selectorValueSet.length == 0) return;
     
     let temp = toReq.split(/(\r\n|\n|\r)/gm)
