@@ -107,13 +107,16 @@ function onChoseFile(event){
         var jsToPass = {}
         jsToPass["action"] = "postExcel";
         jsToPass.actualData = reader.result;
-        // console.log(jsToPass.actualData)
-        myAjax(jsToPass,function(){
-            if (this.readyState == 4 && this.status == 200){
-                // console.log(JSON.parse(this.response))
-                console.log("shangchuanwangbi")
-            }
-        })
+        // console.log('pipi')
+        let wb = XLSX.read(reader.result, { type: 'binary' })
+        getItemInfo(wb)
+        
+        // myAjax(jsToPass,function(){
+        //     if (this.readyState == 4 && this.status == 200){
+        //         // console.log(JSON.parse(this.response))
+        //         console.log("shangchuanwangbi")
+        //     }
+        // })
     }
     		
     reader.readAsBinaryString(file)
@@ -135,7 +138,6 @@ function switchToUploadBom(event){
     let upBom = document.getElementById("uploadBom")
     tbmk.style.display = "none";
     upBom.style.display = "block"
-    console.log("ff")
 }
 
 function onSelect(event) {
@@ -230,3 +232,4 @@ function s2ab(s) {
 		return buf;
 	}
 }
+
