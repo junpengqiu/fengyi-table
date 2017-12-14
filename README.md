@@ -21,3 +21,10 @@ This chat example showcases how to use `socket.io` with a static `express` serve
 
 Once the server is running, open the project in the shape of 'https://projectname-username.c9users.io/'. As you enter your name, watch the Users list (on the left) update. Once you press Enter or Send, the message is shared with all connected clients.
 # fengyi-table
+
+Setting up Mongodb:
+in terminal:
+mkdir data
+echo 'mongod --bind\_ip=$IP --dbpath=data --nojournal --rest "$@"' > mongod
+chmod a+x mongod
+./mongod
