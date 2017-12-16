@@ -7,20 +7,20 @@ function getCellValue(wb,sheetIdx,cellAddr){
 function getItemInfo(wb){
   
   let productNum = getCellValue(wb,0,'A7')
-//   console.log(productNum[16])
+  
   let tempSplit = productNum[16];
-
-//   let tempSplit = "："
+  
   productNum = productNum.split(tempSplit)
   console.log(productNum)
   productNum = productNum[1]
+  productNum = productNum.slice(1,productNum.length)
   
   let preparer = getCellValue(wb,0,'E7')
   preparer = preparer.split(":")
   preparer = preparer[1]
   
   let dt = getCellValue(wb,0,'H7');
-  dt = (dt-1) * 8.64e7 -2208960000000
+  if(typeof dt !== "number") return
   
   let productName = getCellValue(wb,0,'A8')
   productName = productName.split(tempSplit)
@@ -118,6 +118,51 @@ function getItemInfo(wb){
   }
   
   console.log(partInfoSet);
-  console.log(currentItem)
+  console.log(currentItem);
+  
+  var jsToPass = {}
+  jsToPass["action"] = "postFetchedData";
+  jsToPass.productInfo = currentItem;
+  jsToPass.partInfoSet = partInfoSet;
+  
+  while(document.getElementById("uploadStatWrapper").lastChild){
+    document.getElementById("uploadStatWrapper").removeChild(document.getElementById("uploadStatWrapper").lastChild)
+  }
+  let statHeadDiv = document.createElement("DIV")
+  let temp = document.createTextNode("uploading " + currentItem["Product Name"]);
+  statHeadDiv.appendChild(temp)
+  document.getElementById("uploadStatWrapper").appendChild(statHeadDiv)
+  
+  partInfoSet.forEach(function(ele){
+    let statContentDiv = document.createElement("DIV")
+    let temp = document.createTextNode("uploading " + ele["Part Name"] + " [" + ele["Part Number"] +"]")
+    statContentDiv.appendChild(temp)
+    document.getElementById("uploadStatWrapper").appendChild(statContentDiv)
+  })
+  
+  myAjax(jsToPass,function(){
+    if (this.readyState == 4 && this.status == 200){
+      let res = JSON.parse(this.response);
+      console.log(res)
+      document.getElementById("chooseBomButton").disabled = false;
+      
+      while(document.getElementById("uploadStatWrapper").lastChild){
+        document.getElementById("uploadStatWrapper").removeChild(document.getElementById("uploadStatWrapper").lastChild)
+      }
+      let statHeadDiv = document.createElement("DIV")
+      let temp = document.createTextNode("uploaded " + currentItem["Product Name"]);
+      statHeadDiv.appendChild(temp)
+      statHeadDiv.style.color = "green"
+      document.getElementById("uploadStatWrapper").appendChild(statHeadDiv)
+      partInfoSet.forEach(function(ele){
+        let statContentDiv = document.createElement("DIV")
+        statContentDiv.style.color = "green"
+        let temp = document.createTextNode("uploaded " + ele["Part Name"] + " [" + ele["Part Number"] +"]")
+        statContentDiv.appendChild(temp)
+        document.getElementById("uploadStatWrapper").appendChild(statContentDiv)
+      })
+    }
+    
+  })
   
 }

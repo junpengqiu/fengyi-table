@@ -99,24 +99,25 @@ function logFile(event) {
 
 function onChoseFile(event){
     event.preventDefault();
+    let temp = document.getElementById("chooseBomButton");
+    temp.disabled = true;
+    
+    while(document.getElementById("uploadStatWrapper").lastChild){
+        document.getElementById("uploadStatWrapper").removeChild(document.getElementById("uploadStatWrapper").lastChild)
+    }
     
     let reader = new FileReader();
     let file = event.target.files[0];
     		
     reader.onloadend = () => {
-        var jsToPass = {}
-        jsToPass["action"] = "postExcel";
-        jsToPass.actualData = reader.result;
-        // console.log('pipi')
-        let wb = XLSX.read(reader.result, { type: 'binary' })
+        let wb;
+        try{
+            wb = XLSX.read(reader.result, { type: 'binary' })
+        }catch(err){
+            document.getElementById("uploadStatWrapper").appendChild(document.createTextNode("please only upload XLSX file"))
+            document.getElementById("chooseBomButton").disabled = false;
+        }
         getItemInfo(wb)
-        
-        // myAjax(jsToPass,function(){
-        //     if (this.readyState == 4 && this.status == 200){
-        //         // console.log(JSON.parse(this.response))
-        //         console.log("shangchuanwangbi")
-        //     }
-        // })
     }
     		
     reader.readAsBinaryString(file)

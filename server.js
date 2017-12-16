@@ -411,6 +411,24 @@ server.on('request',function(req,res){
         }
       }
       
+      //post fetched data from excel
+      else if(bodyJson.action === "postFetchedData"){
+        new ProductItem(bodyJson.productInfo).save(function(error,data){
+          if(error) {
+            res.end(JSON.stringify({error:"fail saving productInfo"}))
+          }else{
+            res.end(JSON.stringify({error:null}));
+            bodyJson.partInfoSet.forEach(function(ele){
+              new ProductPart(ele).save(function(error,data){
+                if(error) console.log(error)
+              })
+            })
+            
+          }
+        })
+        
+      }
+      
       //post excel
       else if(bodyJson.action === "postExcel"){
         // console.log(bodyJson.actualData)

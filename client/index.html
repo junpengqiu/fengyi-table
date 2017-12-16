@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <title> Fortune Table Maker </title>
   <link rel="stylesheet" type="text/css" href="/css/main.css">
   <style>
@@ -23,7 +24,7 @@
       	<a onclick="switchToTableMaker(event)">
         	Table Maker
         </a>
-       </li>
+      </li>
         
 			<li class="navBulletPoint">
 				<a onclick="switchToUploadBom(event)">
@@ -67,8 +68,9 @@
 	
 	
 	
-	<div class="uploadBom" id="uploadBom" style="display:none">
-		<input type="file" onchange="onChoseFile(event)">
+	<div class="uploadBom" id="uploadBom" style="display:none; text-align: center">
+		<input type="file" onchange="onChoseFile(event)" id="chooseBomButton">
+		<div style="margin: auto; text-align: left; max-width: 300px; margin-top: 20px" id="uploadStatWrapper"></div>
 	</div>
 	
 	
