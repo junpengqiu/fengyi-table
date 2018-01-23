@@ -62,7 +62,7 @@ function renderJoinBorder(){
 function myAjax(toSend,cb){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = cb;
-    xhttp.open("POST", "https://fortune-table-dawahent.c9users.io/");
+    xhttp.open("POST", "/");
     xhttp.send(JSON.stringify(toSend));
 }
 
